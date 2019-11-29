@@ -23,7 +23,8 @@
 // * create date 2019\11\28 0028
 // */
 //@Configuration
-//public class ElasticsearchConfiguration implements FactoryBean<RestHighLevelClient>, InitializingBean, DisposableBean {
+////public class ElasticsearchConfiguration implements FactoryBean<RestHighLevelClient>, InitializingBean, DisposableBean {
+//public class ElasticsearchConfiguration {
 //
 //    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchConfiguration.class);
 //    @Value("${spring.elasticsearch.rest.username}")
@@ -35,42 +36,42 @@
 //    private RestHighLevelClient restHighLevelClient;
 //
 //
-//    @Override
-//    public void destroy()  {
-//
-//        LOGGER.info("Closing elasticSearch client");
-//        if(restHighLevelClient != null){
-//            try {
-//                restHighLevelClient.close();
-//            } catch (IOException e) {
-//                LOGGER.error("Error closing ElasticSearch client: ", e);
-//            }
-//        }
-//    }
-//
-//    @Override
-//    public RestHighLevelClient getObject() throws Exception {
-//
-//        return restHighLevelClient;
-//    }
-//
-//    @Override
-//    public Class<?> getObjectType() {
-//
-//        return RestHighLevelClient.class;
-//    }
-//
-//    @Override
-//    public void afterPropertiesSet() throws Exception {
-//        buildClient();
-//    }
+////    @Override
+////    public void destroy()  {
+////
+////        LOGGER.info("Closing elasticSearch client");
+////        if(restHighLevelClient != null){
+////            try {
+////                restHighLevelClient.close();
+////            } catch (IOException e) {
+////                LOGGER.error("Error closing ElasticSearch client: ", e);
+////            }
+////        }
+////    }
+////
+////    @Override
+////    public RestHighLevelClient getObject() throws Exception {
+////
+////        return restHighLevelClient;
+////    }
+////
+////    @Override
+////    public Class<?> getObjectType() {
+////
+////        return RestHighLevelClient.class;
+////    }
+////
+////    @Override
+////    public void afterPropertiesSet() throws Exception {
+////        buildClient();
+////    }
 //
 //
 //    @Bean
-//    protected void buildClient(){
+//    public void buildClient(){
 //        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
 //        credentialsProvider.setCredentials(AuthScope.ANY,new UsernamePasswordCredentials(username,password));
-//        restHighLevelClient = new RestHighLevelClient(
+//        this.restHighLevelClient = new RestHighLevelClient(
 //                RestClient.builder(new HttpHost("172.168.1.214", 9200),
 //                        new HttpHost("172.168.1.213", 9200),
 //                        new HttpHost("172.168.1.212", 9200),

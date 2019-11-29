@@ -36,9 +36,7 @@ dependencies {
     // elasticsearch
     implementation('org.springframework.boot:spring-boot-starter-data-elasticsearch')
     implementation('org.elasticsearch:elasticsearch')
-//    implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client')
-//    implementation('org.apache.lucene:lucene-core')
-    compile "com.bbossgroups.plugins:bboss-elasticsearch-spring-boot-starter:5.9.5"
+    implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client')
 
     // 其他
     implementation('org.apache.commons:commons-lang3:3.7')
