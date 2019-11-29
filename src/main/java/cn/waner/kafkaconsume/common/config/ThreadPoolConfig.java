@@ -1,4 +1,4 @@
-package cn.waner.kafkaconsume.config;
+package cn.waner.kafkaconsume.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,11 +33,13 @@ public class ThreadPoolConfig {
     }
 
     private ThreadPoolTaskExecutor setThreadPoolTackExecutor (int corePoolSize, int maxPoolSize, int queueCapacity, int keepAliveSeconds){
-        var threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setCorePoolSize(corePoolSize);
         threadPoolTaskExecutor.setMaxPoolSize(maxPoolSize);
         threadPoolTaskExecutor.setQueueCapacity(queueCapacity);
         threadPoolTaskExecutor.setKeepAliveSeconds(keepAliveSeconds);
+
+
 
         return threadPoolTaskExecutor;
     }

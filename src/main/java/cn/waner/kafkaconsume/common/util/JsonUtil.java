@@ -1,10 +1,8 @@
-package cn.waner.kafkaconsume.util;
+package cn.waner.kafkaconsume.common.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

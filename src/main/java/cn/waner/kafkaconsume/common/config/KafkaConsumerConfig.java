@@ -1,4 +1,4 @@
-package cn.waner.kafkaconsume.config;
+package cn.waner.kafkaconsume.common.config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
@@ -37,26 +37,27 @@ public class KafkaConsumerConfig {
     private String autoOffsetReset;
     @Value("${spring.kafka.listener.concurrency}")
     private int concurrency;
+    @Value("${kafka.consumer.task.group-id}")
+    private String taskGroupId;
 
-    @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String,byte[]>> kafkaListenerContainerFactory(){
-        var factory = new ConcurrentKafkaListenerContainerFactory<String,byte[]>();
+    @Bean("kafkaListenerContainerFactory")
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String,String>> kafkaListenerContainerFactory(){
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
 
         factory.setConsumerFactory(consumerFactory());
         // 并发数量
         factory.setConcurrency(concurrency);
         // 批量获取
         factory.setBatchListener(true);
-        factory.getContainerProperties().setPollTimeout(1500);
+        factory.getContainerProperties().setPollTimeout(3000);
         factory.setAutoStartup(true);
         return factory;
 
     }
 
-    public ConsumerFactory<String, byte[]> consumerFactory() {
+    public ConsumerFactory<String, String> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerConfigs());
     }
-
 
     public Map<String, Object> consumerConfigs() {
         Map<String, Object> propsMap = new HashMap<>();
@@ -72,6 +73,46 @@ public class KafkaConsumerConfig {
 
         return propsMap;
     }
+
+    @Bean("kafkaListenerTaskContainerFactory")
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String,String>> kafkaListenerTaskContainerFactory(){
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+
+        factory.setConsumerFactory(taskConsumerFactory());
+        // 并发数量
+        factory.setConcurrency(1);
+        // 批量获取
+        factory.setBatchListener(true);
+        factory.getContainerProperties().setPollTimeout(3000);
+        factory.setAutoStartup(true);
+        return factory;
+
+    }
+
+    public ConsumerFactory<String, String> taskConsumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(taskConsumerConfigs());
+    }
+
+    public Map<String, Object> taskConsumerConfigs() {
+        Map<String, Object> propsMap = new HashMap<>();
+        propsMap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
+        propsMap.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, enableAutoCommit);
+        propsMap.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, autoCommitInterval);
+        propsMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        propsMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class);
+        propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, taskGroupId);
+        propsMap.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset);
+        //最多批量获取50个
+        propsMap.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG,1);
+        return propsMap;
+    }
+
+
+
+
+
+
+
     @Bean
     public KafkaProperties.Listener listener() {
         return new KafkaProperties.Listener();
