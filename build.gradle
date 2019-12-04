@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.2.0.RELEASE'
+    id 'org.springframework.boot' version '2.1.0.RELEASE'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'java'
 }
@@ -30,18 +30,18 @@ dependencies {
     implementation('org.apache.hadoop:hadoop-client:3.1.1'){
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
-    // redis
-    implementation('redis.clients:jedis:2.9.0')
-    implementation('org.springframework.boot:spring-boot-starter-data-redis')
     // elasticsearch
     implementation('org.springframework.boot:spring-boot-starter-data-elasticsearch')
-    implementation('org.elasticsearch:elasticsearch')
-    implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client')
-
+    implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:6.4.3')
+//    compile group: 'org.elasticsearch', name: 'elasticsearch', version: '6.8.4'
+//    compile group: 'org.elasticsearch.client', name: 'transport', version: '6.8.4'
+//    compile 'org.elasticsearch.plugin:transport-netty4-client:6.8.4'
+    implementation('com.unboundid:unboundid-ldapsdk:3.2.0')
     // 其他
     implementation('org.apache.commons:commons-lang3:3.7')
     implementation('org.apache.commons:commons-collections4:4.2')
     implementation('commons-net:commons-net:3.6')
+
 }
 
 test {

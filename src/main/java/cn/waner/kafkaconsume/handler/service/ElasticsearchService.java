@@ -1,19 +1,16 @@
 package cn.waner.kafkaconsume.handler.service;
 
 import cn.waner.kafkaconsume.handler.bean.CrudeLog;
-import com.google.gson.Gson;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.elasticsearch.action.bulk.*;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.common.UUIDs;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.query.IndexQuery;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 /**
  * @author TanChong
@@ -22,48 +19,24 @@ import java.util.Random;
 @Service
 public class ElasticsearchService {
 
-    private ElasticsearchTemplate elasticsearchTemplate;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchService.class);
+    private final static String INDEX_NAME = "was-cloud";
+    private final static String INDEX_TYPE = "crude_log";
 
-    private static final String INDEX_NAME = "was-cloud";
-
-    private static final String INDEX_TYPE = "crude_log";
-
+    private BulkProcessor bulkProcessor;
 
     @Autowired
-    public ElasticsearchService(ElasticsearchTemplate elasticsearchTemplate) {
-        this.elasticsearchTemplate = elasticsearchTemplate;
+    public ElasticsearchService(BulkProcessor bulkProcessor) {
+        this.bulkProcessor = bulkProcessor;
     }
-
-    public long bulkIndex(List<CrudeLog> crudeLogs){
-        int counter = 0;
-
-        if(!elasticsearchTemplate.indexExists(INDEX_NAME)){
-            elasticsearchTemplate.createIndex(INDEX_NAME);
+    public void insert(CrudeLog crudeLog){
+        try {
+            String data = new ObjectMapper().writeValueAsString(crudeLog);
+            IndexRequest indexRequest = new IndexRequest(INDEX_NAME, INDEX_TYPE).source(data, XContentType.JSON);
+            bulkProcessor.add(indexRequest);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
-        ArrayList<IndexQuery> indexQueries = new ArrayList<>();
-        for (CrudeLog crudeLog : crudeLogs) {
-            IndexQuery indexQuery = new IndexQuery();
-            indexQuery.setId(crudeLog.getId().toString());
-            indexQuery.setSource(crudeLog.getMsg());
-            indexQuery.setIndexName(INDEX_NAME);
-            indexQuery.setType(INDEX_TYPE);
-            indexQueries.add(indexQuery);
-            if (counter % 500 == 0) {
-                elasticsearchTemplate.bulkIndex(indexQueries);
-                indexQueries.clear();
-                System.out.println("bulkIndex counter : " + counter);
-            }
-            counter++;
-        }
-        //不足批的索引最后不要忘记提交
 
-        if (indexQueries.size() > 0) {
-            elasticsearchTemplate.bulkIndex(indexQueries);
-        }
-        elasticsearchTemplate.refresh(INDEX_NAME);
-
-        System.out.println("bulkIndex completed.");
-
-        return -1;
     }
 }

@@ -107,8 +107,38 @@ public class KafkaConsumerConfig {
         return propsMap;
     }
 
+    @Bean("kafkaListenerEsContainerFactory")
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String,String>> kafkaListenerEsContainerFactory(){
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
 
+        factory.setConsumerFactory(esConsumerFactory());
+        // 并发数量 等于消费者数量
+        factory.setConcurrency(7);
+        // 批量获取
+        factory.setBatchListener(true);
+        factory.getContainerProperties().setPollTimeout(3000);
+        factory.setAutoStartup(true);
+        return factory;
 
+    }
+
+    public ConsumerFactory<String, String> esConsumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(esConsumerConfigs());
+    }
+
+    public Map<String, Object> esConsumerConfigs() {
+        Map<String, Object> propsMap = new HashMap<>();
+        propsMap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
+        propsMap.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, enableAutoCommit);
+        propsMap.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, autoCommitInterval);
+        propsMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        propsMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class);
+        propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, taskGroupId);
+        propsMap.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset);
+        //最多批量获取15000个
+        propsMap.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG,15000);
+        return propsMap;
+    }
 
 
 

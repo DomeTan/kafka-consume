@@ -81,7 +81,7 @@ public class HdfsService {
             try {
                 boolean result = uploadFile(logPath, hdfsPath);
                 if(result){
-                    LOGGER.info("上传成功");
+//                    LOGGER.info("上传成功");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -97,13 +97,14 @@ public class HdfsService {
 //    @Transactional
     public void upload(String logPath){
         String hdfsPath = getHdfsPath(logPath);
+        if(hdfsPath == null) return;
         exists(hdfsPath);
         File file = new File(logPath);
         if(file.exists()){
             try {
                 boolean result = uploadFile(logPath, hdfsPath);
                 if(result){
-                    LOGGER.info("上传成功");
+//                    LOGGER.info("上传成功");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -123,7 +124,8 @@ public class HdfsService {
      * @return
      */
     private static String getHdfsPath(String logSrcStoragePath){
-        String[] split = logSrcStoragePath.split("/");
+        String[] split = logSrcStoragePath.split("\\\\");
+        if(split.length != 6) return null;
         return new StringBuilder("/")
                 .append(split[1]).append("/")
                 .append(split[2]).append("/")

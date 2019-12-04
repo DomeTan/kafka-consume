@@ -90,7 +90,6 @@ public class UploadTaskCacheManager {
             pushCacheBean(TASK_MAP);
         }
         long end = System.currentTimeMillis();
-        LOGGER.error("求差值用时 : {}",(end-start));
     }
 
     private void pushCacheBean(ConcurrentHashMap<String,Long> map){
@@ -99,7 +98,6 @@ public class UploadTaskCacheManager {
 
             kafkaService.pushTask(key,TOPIC);
             TRANSFER_MAP.put(key, value);
-            LOGGER.info("{}, {}",atomicInteger.get(),key);
         });
         TASK_MAP.clear();
     }
